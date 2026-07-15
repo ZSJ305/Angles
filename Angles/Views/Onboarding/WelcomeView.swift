@@ -153,4 +153,4 @@ struct WelcomeView: View {
         UserDefaults.standard.set(true, forKey: "hasConfiguredProvider")
         hasConfiguredProvider = true
     }
-}", "tool_title": "升级 WelcomeView — 7 个 Provider 含图标", "path": "/var/minis/mounts/angles/Angles/Angles/Views/Onboarding/WelcomeView.swift", "append": false}
+}

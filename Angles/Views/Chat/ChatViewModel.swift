@@ -73,14 +73,14 @@ final class ChatViewModel: ObservableObject {
                     }
                 },
                 onToolCall: { [weak self] name, args in
-                    let self = self!
+                    guard let strongSelf = self else { return "" }
                     let callID = UUID().uuidString
                     let callData = ToolCallData(id: callID, name: name, arguments: String(data: try! JSONSerialization.data(withJSONObject: args), encoding: .utf8) ?? "{}")
-                    let result = try await self.toolExecutor?.execute(name: name, arguments: args) ?? "Tool not available"
+                    let result = try await strongSelf.toolExecutor?.execute(name: name, arguments: args) ?? "Tool not available"
                     let resultData = ToolResultData(callID: callID, result: result)
                     
                     await MainActor.run {
-                        var msg = self.messages[msgIdx]
+                        var msg = strongSelf.messages[msgIdx]
                         msg.toolCalls = (msg.toolCalls ?? []) + [callData]
                         msg.toolResults = (msg.toolResults ?? []) + [resultData]
                         fullResponse += "\n🔧 \(name): \(result)\n"
