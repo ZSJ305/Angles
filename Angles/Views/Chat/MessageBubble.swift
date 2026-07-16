@@ -3,58 +3,55 @@ import SwiftUI
 /// Individual message bubble in the chat
 struct MessageBubbleView: View {
     let message: ChatMessage
-    
+
     var body: some View {
         HStack(spacing: 0) {
             if message.role == .assistant {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Angles")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.cyan)
+                        .font(Font.caption2.weight(.bold))
+                        .foregroundColor(.cyan)
                     Text(message.content)
                         .font(.body)
-                        .textSelection(.enabled)
-                    
+
                     if message.isStreaming {
                         HStack(spacing: 4) {
                             ProgressView()
                                 .scaleEffect(0.7)
                             Text("Thinking...")
                                 .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                .foregroundColor(.secondary)
                         }
                     }
                 }
                 .padding(12)
-                .background(.cyan.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(Color.cyan.opacity(0.08))
+                .cornerRadius(12)
                 Spacer(minLength: 40)
             } else if message.role == .user {
                 Spacer(minLength: 40)
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("You")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.blue)
+                        .font(Font.caption2.weight(.bold))
+                        .foregroundColor(.blue)
                     Text(message.content)
                         .font(.body)
-                        .textSelection(.enabled)
                 }
                 .padding(12)
-                .background(.blue.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(Color.blue.opacity(0.08))
+                .cornerRadius(12)
             } else if message.role == .tool {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("🔧 Tool Result")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.green)
+                        .font(Font.caption2.weight(.bold))
+                        .foregroundColor(.green)
                     Text(message.content)
                         .font(.caption)
-                        .textSelection(.enabled)
                         .lineLimit(6)
                 }
                 .padding(8)
-                .background(.green.opacity(0.06))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .background(Color.green.opacity(0.06))
+                .cornerRadius(8)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -69,31 +66,31 @@ struct MessageInputBar: View {
     let hasConfig: Bool
     let onSend: () -> Void
     let onStop: () -> Void
-    var isFocused: FocusState<Bool>.Binding?
-    
+
     var body: some View {
         HStack(spacing: 8) {
-            TextField(hasConfig ? "Message Angles..." : "Configure API in Settings first", text: $text, axis: .vertical)
-                .textFieldStyle(.plain)
+            TextField(hasConfig ? "Message Angles..." : "Configure API in Settings first",
+                      text: $text)
+                .textFieldStyle(PlainTextFieldStyle())
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(.quaternary)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .lineLimit(1...5)
+                .background(Color(.systemGray5))
+                .cornerRadius(20)
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
                 .disabled(!hasConfig)
-                .onSubmit { if hasConfig && !isStreaming { onSend() } }
-            
+
             if isStreaming {
                 Button(action: onStop) {
                     Image(systemName: "stop.fill")
                         .font(.title3)
-                        .foregroundStyle(.red)
+                        .foregroundColor(.red)
                 }
             } else {
                 Button(action: onSend) {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(hasConfig && !text.trimmingCharacters(in: .whitespaces).isEmpty ? .cyan : .gray)
+                        .foregroundColor(hasConfig && !text.trimmingCharacters(in: .whitespaces).isEmpty ? .cyan : .gray)
                 }
                 .disabled(!hasConfig || text.trimmingCharacters(in: .whitespaces).isEmpty)
             }

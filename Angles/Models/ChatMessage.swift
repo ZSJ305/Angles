@@ -1,35 +1,22 @@
 import Foundation
-import SwiftData
 
-@Model
-final class ChatMessage {
-    var id: UUID
+final class ChatMessage: ObservableObject, Identifiable {
+    var id = UUID()
     var role: MessageRole
     var content: String
-    var timestamp: Date
+    var timestamp = Date()
     var toolCalls: [ToolCallData]?
     var toolResults: [ToolResultData]?
-    var isStreaming: Bool
-    var sessionID: UUID
-    
+    var isStreaming = false
+    var sessionID = UUID()
+
     init(id: UUID = UUID(), role: MessageRole, content: String, timestamp: Date = Date(), sessionID: UUID = UUID()) {
-        self.id = id
-        self.role = role
-        self.content = content
-        self.timestamp = timestamp
-        self.toolCalls = nil
-        self.toolResults = nil
-        self.isStreaming = false
-        self.sessionID = sessionID
+        self.id = id; self.role = role; self.content = content; self.timestamp = timestamp; self.sessionID = sessionID
     }
 }
 
 enum MessageRole: String, Codable, CaseIterable {
-    case user
-    case assistant
-    case system
-    case tool
-    
+    case user, assistant, system, tool
     var displayName: String {
         switch self {
         case .user: return "You"
@@ -40,14 +27,12 @@ enum MessageRole: String, Codable, CaseIterable {
     }
 }
 
-/// Represents a tool call from the model
 struct ToolCallData: Codable {
     var id: String
     var name: String
-    var arguments: String  // JSON string
+    var arguments: String
 }
 
-/// Represents a tool result returned to the model
 struct ToolResultData: Codable {
     var callID: String
     var result: String

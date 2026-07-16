@@ -1,5 +1,5 @@
-import WebKit
 import SwiftUI
+import WebKit
 
 /// Coordinator for WKWebView — handles navigation, content extraction, JS execution, and screenshots.
 /// Inspired by Minis' BrowserUseOffloadBridge pattern.

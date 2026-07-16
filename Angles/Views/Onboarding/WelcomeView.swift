@@ -10,67 +10,61 @@ struct WelcomeView: View {
     @State private var maxTokens = 4096
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Header
-                VStack(spacing: 12) {
-                    Image(systemName: "angle")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.cyan)
-                        .padding(.top, 32)
-                    
-                    Text("Welcome to Angles")
-                        .font(.largeTitle.bold())
-                    
-                    Text("Your personal coding AI agent")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.bottom, 24)
+        VStack(spacing: 0) {
+            VStack(spacing: 12) {
+                Image(systemName: "angle")
+                    .font(.system(size: 48))
+                    .foregroundColor(.cyan)
+                    .padding(.top, 32)
                 
-                Form {
-                    Section {
-                        Picker("Provider", selection: $selectedProviderType) {
-                            ForEach(ProviderType.allCases, id: \.self) { type in
-                                HStack {
-                                    Image(systemName: providerIcon(for: type))
-                                        .foregroundStyle(providerColor(for: type))
-                                    Text(type.rawValue)
-                                }.tag(type)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .onChange(of: selectedProviderType) { _, t in resetFields(for: t) }
-                    } header: {
-                        Text("Choose your AI Provider")
-                    }
-                    
-                    Section("API Configuration") {
-                        field("API Key", "sk-...", $apiKey, isSecure: true)
-                        field("Host URL", "https://...", $baseURL, keyboard: .URL)
-                        field("Model ID", "model-id", $modelID)
-                        field("Max Tokens", "4096", numberValue: $maxTokens, keyboard: .numberPad)
-                    }
-                    
-                    Section {
-                        Button(action: saveAndContinue) {
-                            HStack {
-                                Spacer()
-                                Text("Launch Angles").bold()
-                                Spacer()
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                        .disabled(apiKey.trimmingCharacters(in: .whitespaces).isEmpty
-                            || baseURL.trimmingCharacters(in: .whitespaces).isEmpty
-                            || modelID.trimmingCharacters(in: .whitespaces).isEmpty)
-                    }
-                }
-                .scrollContentBackground(.hidden)
+                Text("Welcome to Angles")
+                    .font(Font.largeTitle.weight(.bold))
+                
+                Text("Your personal coding AI agent")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            .background(Color(.systemGroupedBackground))
+            .padding(.bottom, 24)
+            
+            Form {
+                Section {
+                    Picker("Provider", selection: $selectedProviderType) {
+                        ForEach(ProviderType.allCases, id: \.self) { type in
+                            HStack {
+                                Image(systemName: providerIcon(for: type))
+                                    .foregroundColor(providerColor(for: type))
+                                Text(type.rawValue)
+                            }.tag(type)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .onChange(of: selectedProviderType) { _ in resetFields(for: selectedProviderType) }
+                } header: {
+                    Text("Choose your AI Provider")
+                }
+                
+                Section(header: Text("API Configuration")) {
+                    field("API Key", "sk-...", $apiKey, isSecure: true)
+                    field("Host URL", "https://...", $baseURL, keyboard: .URL)
+                    field("Model ID", "model-id", $modelID)
+                    field("Max Tokens", "4096", numberValue: $maxTokens, keyboard: .numberPad)
+                }
+                
+                Section {
+                    Button(action: saveAndContinue) {
+                        HStack {
+                            Spacer()
+                            Text("Launch Angles").fontWeight(.bold)
+                            Spacer()
+                        }
+                    }
+                    .disabled(apiKey.trimmingCharacters(in: .whitespaces).isEmpty
+                        || baseURL.trimmingCharacters(in: .whitespaces).isEmpty
+                        || modelID.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
         }
+        .background(Color(.systemGroupedBackground))
     }
     
     // MARK: - Fields Helper
@@ -78,14 +72,14 @@ struct WelcomeView: View {
     @ViewBuilder
     private func field(_ label: String, _ placeholder: String, _ binding: Binding<String>, isSecure: Bool = false, keyboard: UIKeyboardType = .default) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label).font(.caption).foregroundStyle(.secondary)
+            Text(label).font(.caption).foregroundColor(.secondary)
             if isSecure {
                 SecureField(placeholder, text: binding).textContentType(.password)
             } else {
                 TextField(placeholder, text: binding)
                     .keyboardType(keyboard)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
             }
         }
     }
@@ -93,8 +87,8 @@ struct WelcomeView: View {
     @ViewBuilder
     private func field(_ label: String, _ placeholder: String, numberValue: Binding<Int>, keyboard: UIKeyboardType = .default) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label).font(.caption).foregroundStyle(.secondary)
-            TextField(placeholder, value: numberValue, format: .number)
+            Text(label).font(.caption).foregroundColor(.secondary)
+            TextField(placeholder, value: numberValue, formatter: NumberFormatter())
                 .keyboardType(keyboard)
         }
     }
