@@ -13,19 +13,23 @@ jobs:
 
       - name: Build Archive
         run: |
-          xcodebuild archive \
+          xcodebuild \
             -project Angles.xcodeproj \
-            -scheme Angles \
-            -archivePath Angles.xcarchive \
-            -destination "generic/platform=iOS" \
+            -target Angles \
+            -configuration Release \
+            -sdk iphoneos \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=14.0 \
+            CONFIGURATION_BUILD_DIR=./build/Release-iphoneos \
+            build 2>&1
 
       - name: Create IPA
         run: |
+          cp -R ./build/Release-iphoneos/Angles.app ./Angles.app
           mkdir -p Payload
-          cp -R Angles.xcarchive/Products/Applications/Angles.app Payload/
+          cp -R Angles.app Payload/
           zip -r Angles.ipa Payload/
           rm -rf Payload
 
